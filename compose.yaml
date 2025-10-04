@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: dockerfile
-    container_name: apache_php_alpine
+    container_name: APA
     ports:
       - '8080:80'
       - '8081:443'
