@@ -17,7 +17,12 @@ php84-fileinfo \
 php84-mbstring \
 php84-session \
 php84-tokenizer \
-php84-curl
+php84-curl \
+php84-xmlwriter \
+php84-xmlreader \
+php84-xml \
+nodejs-current \
+npm
 
 COPY config/apache2/conf.d/vhosts/*.conf /etc/apache2/conf.d/
 
@@ -31,6 +36,10 @@ RUN php -r "if (hash_file('sha384', 'composer-setup.php') === 'ed0feb545ba871612
 RUN php composer-setup.php
 RUN php -r "unlink('composer-setup.php');"
 RUN mv composer.phar /usr/local/bin/composer
+
+RUN composer global require laravel/installer
+
+RUN export PATH=$PATH:$HOME/.composer/vendor/bin
 
 RUN chown -R apache:apache /var/www/localhost
 
