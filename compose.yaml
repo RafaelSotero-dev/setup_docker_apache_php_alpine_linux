@@ -1,16 +1,17 @@
 services:
   apache-php:
+    networks:
+      - laravel
     build:
       context: .
       dockerfile: dockerfile
-    container_name: APA
+    container_name: app
     ports:
       - '8080:80'
       - '8081:443'
-    extra_hosts:
-      - project.local:127.0.0.1
 
     volumes:
+      - ~/home/laravel:/var/www/localhost/htdocs
       - ./content:/var/www/localhost/htdocs/content
       - ./config/apache2:/etc/apache2
       - ./config/php84:/etc/php84
@@ -20,12 +21,40 @@ services:
       - mysql
 
   mysql:
+    networks:
+      - laravel
     image: mysql:latest
     container_name: mysqlPHP
     restart: always
     ports:
       - 3306:3306
     environment:
-      MYSQL_ROOT_PASSWORD: root
+      - MYSQL_ROOT_PASSWORD=root
     volumes:
-      - ./data:/app/data
+      - ./.docker/mysql:/data
+    depends_on:
+      - phpmyadmin
+
+  phpmyadmin:
+    networks:
+      - laravel
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 3030:80
+    environment:
+      - PMA_ARBITRARY=1
+
+  redis:
+    networks:
+      - laravel
+    image: redis:8.2.2-alpine3.22
+    container_name: redis_cache
+    ports:
+      - '6379:6379'
+    volumes:
+      - ./.docker/redis:/data
+
+networks:
+  laravel:
+    driver: bridge

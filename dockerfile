@@ -1,4 +1,5 @@
 FROM alpine:latest
+
 RUN apk update
 RUN apk upgrade
 
@@ -21,6 +22,7 @@ php84-curl \
 php84-xmlwriter \
 php84-xmlreader \
 php84-xml \
+php84-simplexml \
 nodejs-current \
 npm
 
@@ -39,11 +41,15 @@ RUN mv composer.phar /usr/local/bin/composer
 
 RUN composer global require laravel/installer
 
-RUN export PATH=$PATH:$HOME/.composer/vendor/bin
 
 RUN chown -R apache:apache /var/www/localhost
+RUN chmod -R 755 /var/www/localhost/htdocs/
+
+ENV WORKDIR=/var/www/localhost/htdocs
+ENV PATH=$PATH:/root/.composer/vendor/bin
 
 EXPOSE 80 443
+WORKDIR /var/www/localhost/htdocs/
 
 CMD [ "httpd", "-D", "FOREGROUND" ]
 
